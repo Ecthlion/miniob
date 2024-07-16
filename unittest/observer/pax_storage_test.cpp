@@ -251,7 +251,9 @@ TEST_P(PaxPageHandlerTestWithParam, PaxPageHandler)
     rc              = iterator.next(record);
     ASSERT_EQ(memcmp(record.data(), &int_val, sizeof(int)), 0);
     ASSERT_EQ(memcmp(record.data() + 4, &float_val, sizeof(float)), 0);
-    ASSERT_EQ(memcmp(record.data() + 8, "12345678910", 4 + 7), 0);
+      ASSERT_EQ(memcmp(record.data() + 8, "12345678910", 4+7 ), 0);
+
+
     ASSERT_EQ(rc, RC::SUCCESS);
     count++;
   }

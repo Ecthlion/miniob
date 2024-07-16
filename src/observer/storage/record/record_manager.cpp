@@ -496,14 +496,18 @@ RC PaxRecordPageHandler::get_record(const RID &rid, Record &record)
 
   record.set_rid(rid);
 
-  char data[page_header_->record_size + 5];
+
+    char* data = new char[page_header_->record_size ];
+
+
+
   int offset = 0;
   for (int col_num = 0; col_num < page_header_->column_num; col_num++) {
     char *colToPos = get_field_data(rid.slot_num, col_num);
     memcpy(&data[offset], colToPos, get_field_len(col_num));
     offset += get_field_len(col_num);
   }
-  record.set_data(data, page_header_->record_size);
+  record.copy_data(data, page_header_->record_size);
 
   return RC::SUCCESS;
 }
@@ -520,9 +524,6 @@ RC PaxRecordPageHandler::get_chunk(Chunk &chunk)
     temp_idxs.push_back(idx);
     idx = bitmap.next_setted_bit(idx + 1) ;
   }
-
-  // printf("%d xxxxxxxxxxxxxxxxxxxxxx is  %d\n",(int)temp_idxs.size(),page_header_->record_num);
-
 
   // exit(0);
   for(auto i = 0; i < chunk.column_num(); i++) {

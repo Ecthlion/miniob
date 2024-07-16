@@ -100,8 +100,35 @@ void AggregateVecPhysicalOperator::update_aggregate_state(void *state, const Col
 
 RC AggregateVecPhysicalOperator::next(Chunk &chunk)
 {
-  // your code here
-  exit(-1);
+  // your codRC rc = RC::SUCCESS;
+
+  if(chunk.rows() > 0) return RC::RECORD_EOF;
+
+  chunk.reset();
+    if (1) {
+        for (size_t i = 0; i < aggregate_expressions_.size(); ++i) {
+
+            auto *aggregate_expr = static_cast<AggregateExpr *>(aggregate_expressions_[i]);
+
+            if (aggregate_expr->aggregate_type() == AggregateExpr::Type::SUM) {
+                if (aggregate_expr->value_type() == AttrType::INTS) {
+                    SumState<int> *state = reinterpret_cast<SumState<int> *>(aggr_values_.at(i));
+                    chunk.add_column(make_unique<Column>(AttrType::INTS, sizeof(int)), i);
+                    append_to_column<SumState<int>, int>(state, chunk.column(i));
+                } else if (aggregate_expr->value_type() == AttrType::FLOATS) {
+                    SumState<float> *state = reinterpret_cast<SumState<float> *>(aggr_values_.at(i));
+                    chunk.add_column(make_unique<Column>(AttrType::FLOATS, sizeof(float)), i);
+                    append_to_column<SumState<float>, float>(state, chunk.column(i));
+                } else {
+                    ASSERT(false, "not supported value type");
+                }
+            } else {
+                ASSERT(false, "not supported aggregation type");
+            }
+        }
+    }
+    printf("rows: %d, cols: %d \n",chunk.rows(),chunk.column_num());
+    return RC::SUCCESS;
 }
 
 RC AggregateVecPhysicalOperator::close()
