@@ -27,13 +27,13 @@ public:
 
   PhysicalOperatorType type() const override { return PhysicalOperatorType::GROUP_BY_VEC; }
 
-  RC open(Trx *trx) override { return RC::UNIMPLENMENT; }
-  RC next(Chunk &chunk) override { return RC::UNIMPLENMENT; }
-  RC close() override { return RC::UNIMPLENMENT; }
-
+  RC open(Trx *trx) override;
+  RC next(Chunk &chunk) override;
+  RC close() override ;
 private:
     std::vector<std::unique_ptr<Expression>> group_by_exprs_;
-    std::vector<Expression *> aggregate_expressions_;
+    std::vector<Expression *> aggregate_expressions_;  /// 聚合表达式
+    std::vector<Expression *> value_expressions_;
     std::unordered_map<std::string, std::vector<void *>> group_by_map_;
     std::vector<std::string> group_keys_;
     size_t current_group_index_ = 0;
