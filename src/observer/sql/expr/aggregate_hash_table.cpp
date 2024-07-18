@@ -52,7 +52,7 @@ RC StandardAggregateHashTable::add_chunk(Chunk &groups_chunk, Chunk &aggrs_chunk
             }
         }
     }
-    return RC::SUCCESS;
+
 }
 
 

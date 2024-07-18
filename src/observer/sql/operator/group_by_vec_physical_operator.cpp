@@ -10,45 +10,47 @@ See the Mulan PSL v2 for more details. */
 
 #include "sql/operator/group_by_vec_physical_operator.h"
 
-
 RC GroupByVecPhysicalOperator::open(Trx *trx)
 {
+    ASSERT(children_.size() == 1, "group by operator only support one child, but got %d", children_.size());
 
     PhysicalOperator &child = *children_[0];
     RC                rc    = child.open(trx);
-
-    while (OB_SUCC(rc = child.next(chunk_))) {
-        Chunk group_chunk;
-        Chunk aggregate_chunk;
-        for (size_t group_by_idx = 0; group_by_idx < groupby_exprs_.size(); ++group_by_idx){
-            Column column_1;
-            groupby_exprs_[group_by_idx]->get_column(chunk_, column_1);
-            group_chunk.add_column(make_unique<Column>(groupby_exprs_[group_by_idx]->value_type(),groupby_exprs_[group_by_idx]->value_length()), groupby_exprs_[group_by_idx]->pos());
-            output_chunk_.add_column(make_unique<Column>(groupby_exprs_[group_by_idx]->value_type(),groupby_exprs_[group_by_idx]->value_length()), group_by_idx);
-        }
-
-        for (size_t aggr_idx = 0; aggr_idx < value_expressions_.size(); aggr_idx++) {
-            Column column_2;
-            value_expressions_[aggr_idx]->get_column(chunk_, column_2);
-            aggregate_chunk.add_column(make_unique<Column>(value_expressions_[aggr_idx]->value_type(),value_expressions_[aggr_idx ]->value_length()), value_expressions_[aggr_idx]->pos());
-            output_chunk_.add_column(make_unique<Column>(value_expressions_[aggr_idx]->value_type(),value_expressions_[aggr_idx ]->value_length()), aggr_idx + groupby_exprs_.size());
-        }
-        hashtable->add_chunk(group_chunk, aggregate_chunk);
+    if (OB_FAIL(rc)) {
+        LOG_INFO("failed to open child operator. rc=%s", strrc(rc));
+        return rc;
     }
-    scanner->open_scan();
+    Chunk groups_chunk;
+    Chunk aggrs_chunk;
 
-    return RC::SUCCESS;
+    for(auto g_idx=0;g_idx<aggregate_expressions_.size();g_idx++) {
+        Column column;
+
+    }
+
+
+    for(auto v_idx=0;v_idx<value_expressions_.size();v_idx++) {
+
+    }
+
+
+
+    return rc;
 }
 
 RC GroupByVecPhysicalOperator::next(Chunk &chunk)
 {
-
-    RC rc = scanner->next(chunk);
+    output_chunk_.reset_data();
+    chunk.reset();
+    RC rc = scanner->next(output_chunk_);
+    chunk.reference(output_chunk_);
     return rc;
 }
+
 
 RC GroupByVecPhysicalOperator::close()
 {
     children_[0]->close();
+    LOG_INFO("close group by operator");
     return RC::SUCCESS;
 }

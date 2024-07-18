@@ -103,6 +103,7 @@ RC AggregateVecPhysicalOperator::next(Chunk &chunk)
   // your codRC rc = RC::SUCCESS;
 
   if(chunk.rows() > 0) return RC::RECORD_EOF;
+  output_chunk_.reset_data();
   chunk.reset();
     if (1) {
         for (size_t i = 0; i < aggregate_expressions_.size(); ++i) {
@@ -122,7 +123,7 @@ RC AggregateVecPhysicalOperator::next(Chunk &chunk)
 
 
                     SumState<int> *state = reinterpret_cast<SumState<int> *>(aggr_values_.at(i));
-                    chunk.add_column(make_unique<Column>(AttrType::INTS, sizeof(int)), i);
+                    output_chunk_.add_column(make_unique<Column>(AttrType::INTS, sizeof(int)), i);
                     append_to_column<SumState<int>, int>(state, chunk.column(i));
                 } else if (aggregate_expr->value_type() == AttrType::FLOATS) {
                     SumState<float> *state = reinterpret_cast<SumState<float> *>(aggr_values_.at(i));
