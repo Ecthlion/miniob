@@ -68,7 +68,10 @@ public:
   {
   public:
     explicit Scanner(AggregateHashTable *hash_table) : AggregateHashTable::Scanner(hash_table) {}
-    ~Scanner() = default;
+
+      Scanner();
+
+      ~Scanner() = default;
 
     void open_scan() override;
 

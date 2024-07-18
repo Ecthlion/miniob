@@ -107,6 +107,7 @@ RC AggregateVecPhysicalOperator::next(Chunk &chunk)
     if (1) {
         for (size_t i = 0; i < aggregate_expressions_.size(); ++i) {
 
+
             auto *aggregate_expr = static_cast<AggregateExpr *>(aggregate_expressions_[i]);
 
             if (aggregate_expr->aggregate_type() == AggregateExpr::Type::SUM) {
@@ -134,6 +135,7 @@ RC AggregateVecPhysicalOperator::next(Chunk &chunk)
                 ASSERT(false, "not supported aggregation type");
             }
         }
+
     }
     printf("rows: %d, cols: %d \n",chunk.rows(),chunk.column_num());
     return RC::SUCCESS;
