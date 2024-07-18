@@ -10,6 +10,7 @@ See the Mulan PSL v2 for more details. */
 
 #pragma once
 
+#include <algorithm>
 #include "sql/expr/aggregate_hash_table.h"
 #include "sql/operator/physical_operator.h"
 
